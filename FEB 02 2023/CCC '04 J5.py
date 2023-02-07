@@ -121,19 +121,27 @@ class SquareKochCurve :
 
 
 def fillCurve(d: Dict[Point, List[str]], s: List[Point], w: int, ps: List[List[int]]) :
-    for i in range(len(d[s[len(s) - 1]])) :
-        if d[s[len(s) - 1]][i] == "N" :
-            p = s[len(s) - 1].north()
-        elif d[s[len(s) - 1]][i] == "E" :
-            p = s[len(s) - 1].east()
-        elif d[s[len(s) - 1]][i] == "S" :
-            p = s[len(s) - 1].south()
+    if len(s) == 0 :
+        return ps
+    curr = s[len(s) - 1]
+    ps[curr.y][curr.x] = 1
+    for i in range(len(d[curr])) :
+        if d[curr][i] == "N" :
+            p = curr.north()
+        elif d[curr][i] == "E" :
+            p = curr.east()
+        elif d[curr][i] == "S" :
+            p = curr.south()
         else :
-            p = s[len(s) - 1].west()
-        if p not in d and p.x < w:
+            p = curr.west()
+        if p not in d and 0 <= p.x < w:
             d[p] = ["N", "E", "S", "W"]
-            s.pop()
             s.append(p)
+    if len(s) > 0 :
+        s.remove(curr)
+        print(s)
+        return fillCurve(d, s, w, ps)
+      
 
 
 
@@ -158,10 +166,8 @@ if __name__ == "__main__" :
                              fractal.edges[edge].start.y + int(translations[direction][1] * point))
             if newPoint.x <= width :
                 if newPoint not in pointDirs :
-                    pointDirs[newPoint] = ["N", "E", "S", "W"]
+                    pointDirs[newPoint] = ["N", "E", "S", "W"]  
                     stack.append(newPoint)
                 points[newPoint.x][newPoint.y] = 1
             pointDirs[newPoint].remove(direction)
-    print(points)
-    fillCurve(pointDirs, stack, points)
-    print(points)
+    print(fillCurve(pointDirs, stack, width, points))
